@@ -489,12 +489,15 @@ module Haml
       list.scan(/([#.])([-:_a-zA-Z0-9]+)/) do |type, property|
         case type
         when '.'
-          if attributes['class']
-            attributes['class'] += " "
-          else
-            attributes['class'] = ""
+          if property =~ /d-/
+            pr = property.split('-')
+            if pr.size < 3
+              raise SyntaxError.new('invalid HTML5 data attribute haml class syntax: ' + property)
+            end
+            attributes["data-#{pr.second}"] = pr[2..-1].join('-')
+          else 
+            attributes['class'] += property
           end
-          attributes['class'] += property
         when '#'; attributes['id'] = property
         end
       end
